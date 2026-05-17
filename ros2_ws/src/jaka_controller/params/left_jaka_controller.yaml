@@ -1,0 +1,12 @@
+/**:
+  ros__parameters:
+    ip: "192.168.2.12"
+    name: "left" 
+    tool_frame_name: "TCP_TEST"
+    user_frame_id: 0
+    tool_frame_id: 1
+    init_gripper_pos: 1000
+    init_gripper_force: 20
+#    init_joint: [ -1.57064, 0.0, 2.6529, 1.7453, 0.0, 0.0 ]
+    init_joint: [ -1.5334371899265402, 1.6282614084505451, -0.9312822455289568, 0.9111497088136412, -3.9276956813275476, 1.6236051848759416]
+    tool_pose: [ 0.0, 0.0, 200.0, 0.0, 0.0, 0.0 ]

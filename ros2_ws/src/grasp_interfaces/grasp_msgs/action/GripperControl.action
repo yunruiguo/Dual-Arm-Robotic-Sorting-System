@@ -1,0 +1,12 @@
+#goal definition
+grasp_msgs/GripperCommand pose
+---
+#result definition
+bool success 
+---
+#feedback definition
+grasp_msgs/GripperCommand current_pose
+builtin_interfaces/Duration time
+builtin_interfaces/Duration estimated_time_remaining
+float32 distance_remaining
+

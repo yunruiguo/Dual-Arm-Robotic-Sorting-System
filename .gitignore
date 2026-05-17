@@ -1,0 +1,19 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# ROS 2 / colcon generated outputs
+build/
+install/
+log/
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# Local model weights and experiment outputs
+*.pth
+*.pt
+*.tar
+outputs/
+assets/input_image/
+assets/input_depth/

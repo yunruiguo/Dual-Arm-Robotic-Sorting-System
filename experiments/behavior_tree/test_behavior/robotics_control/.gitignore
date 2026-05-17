@@ -1,0 +1,13 @@
+*~
+*.o
+build
+build-*
+libs
+bin
+Data
+*.user
+*.pro.user*
+cmake-build-debug
+.idea
+CMakeLists.txt.user
+__pycache__

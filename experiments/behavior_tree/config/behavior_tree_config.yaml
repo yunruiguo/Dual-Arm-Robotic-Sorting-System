@@ -1,0 +1,11 @@
+tree:
+  type: "Sequence"
+  children:
+    - type: "GetPose"
+      arm: "left"
+    - type: "MoveTo"
+      arm: "left"
+      target_pose: [0.5, 0.0, 0.5, 0.0, 0.0, 0.0, 1.0]
+    - type: "GripperControl"
+      arm: "left"
+      command: "open"

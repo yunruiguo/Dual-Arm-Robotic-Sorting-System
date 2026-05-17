@@ -1,0 +1,15 @@
+#goal definition
+grasp_msgs/ArmCommand[] poses
+---
+#result definition
+bool success 
+---
+#feedback definition
+grasp_msgs/ArmCommand current_pose
+grasp_msgs/ArmCommand target_pose
+builtin_interfaces/Duration time
+builtin_interfaces/Duration estimated_time_remaining
+float32 distance_remaining
+uint16 current_index
+uint16 queue_size
+
