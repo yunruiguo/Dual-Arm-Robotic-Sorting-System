@@ -10,6 +10,7 @@ This repository is organized by responsibility instead of by the original delive
 ├── experiments/behavior_tree/          # Python behavior-tree and task-manager experiments
 ├── docs/
 │   ├── deployment/                     # Edge-board, ROS 2, and MoveIt2 setup documents
+│   ├── media/                          # README demo videos and preview images
 │   ├── workflow/                       # Open-box workflow notes
 │   └── architecture/                   # System architecture slides
 └── archives/                           # Preserved legacy bundles for traceability

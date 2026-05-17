@@ -4,6 +4,22 @@ This repository contains a ROS 2 based dual-arm manipulation stack for a real ro
 
 The project has been reorganized into a source-first layout so the active code, ROS 2 workspace, experiments, documentation, and archived legacy artifacts are easy to inspect and rebuild.
 
+## Hardware Demo
+
+<p align="center">
+  <a href="docs/media/robot_arms_1.mp4">
+    <img src="docs/media/robot_arms_1_poster.png" alt="Dual-arm robotic sorting hardware demo" width="92%">
+  </a>
+</p>
+
+<p align="center">
+  <a href="docs/media/robot_arms_1.mp4"><b>Watch the dual-arm hardware demo</b></a>
+</p>
+
+| Demo Asset | Description | Size |
+| --- | --- | --- |
+| [`robot_arms_1.mp4`](docs/media/robot_arms_1.mp4) | Real dual-arm coordination demo for the robotic sorting and box-handling workflow. | 49 MiB |
+
 ## System Overview
 
 The system is organized around four layers:
@@ -48,6 +64,7 @@ flowchart LR
 │   └── legacy/
 ├── docs/
 │   ├── deployment/
+│   ├── media/
 │   ├── workflow/
 │   ├── architecture/
 │   └── PROJECT_STRUCTURE.md
