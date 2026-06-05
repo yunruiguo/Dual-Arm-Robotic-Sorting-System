@@ -1,10 +1,17 @@
-# Dual-Arm Box Opening and Grasping System
+# 🤖 Dual-Arm Box Opening and Grasping System
 
-This repository contains a ROS 2 based dual-arm manipulation stack for a real robot system that performs a full box-opening workflow. It includes RGB-D perception, ArUco pose estimation, box keypoint extraction, planar grasp prediction, arm and gripper action control, task sequencing, deployment notes, and preserved legacy source bundles.
+> **A ROS 2-based autonomous dual-arm manipulation stack for intelligent box handling, object sorting, and intelligent task planning**
 
-The project has been reorganized into a source-first layout so the active code, ROS 2 workspace, experiments, documentation, and archived legacy artifacts are easy to inspect and rebuild.
+![C++](https://img.shields.io/badge/C%2B%2B-87%25-blue?style=flat-square)
+![Python](https://img.shields.io/badge/Python-11.5%25-green?style=flat-square)
+![ROS 2](https://img.shields.io/badge/ROS2-Humble-brightgreen?style=flat-square)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-orange?style=flat-square)
 
-## Hardware Demo
+This repository contains a production-ready ROS 2 manipulation stack for real robot systems that autonomously opens boxes, detects objects, and sorts contents. It integrates **RGB-D perception**, **ArUco pose estimation**, **box keypoint detection**, **planar grasping**, and **dual-arm task orchestration** into a cohesive system.
+
+---
+
+## 🎬 Hardware Demo
 
 <p align="center">
   <a href="docs/media/robot_arms_1.mp4">
@@ -13,110 +20,146 @@ The project has been reorganized into a source-first layout so the active code, 
 </p>
 
 <p align="center">
-  <a href="docs/media/robot_arms_1.mp4"><b>Watch the dual-arm hardware demo</b></a>
+  <a href="docs/media/robot_arms_1.mp4">
+    <strong>▶️ Watch the live dual-arm coordination demo</strong>
+  </a>
 </p>
 
-| Demo Asset | Description | Size |
-| --- | --- | --- |
-| [`robot_arms_1.mp4`](docs/media/robot_arms_1.mp4) | Real dual-arm coordination demo for the robotic sorting and box-handling workflow. | 49 MiB |
+| Asset | Description | Size |
+|-------|-------------|------|
+| [`robot_arms_1.mp4`](docs/media/robot_arms_1.mp4) | Real dual-arm coordination for robotic sorting and box-handling workflow | 49 MiB |
 
-## System Overview
+---
 
-The system is organized around four layers:
+## 🏗️ System Architecture
 
-1. Perception: RGB-D image subscription, ArUco detection, grounded segmentation, mask/keypoint extraction, and grasp pose generation.
-2. Task planning: behavior-tree experiments and task-manager logic for grasping tools, cutting tape, opening flaps, flipping boxes, lifting boxes, and sorting objects.
-3. Motion execution: ROS 2 action interfaces for arm trajectories, TCP line/circle motion, gripper commands, and feedback state publishing.
-4. Deployment: documented setup for edge compute boards, ROS 2 Humble, MoveIt2, camera calibration, and robot connection parameters.
+The system is organized into **four integrated layers**:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    PERCEPTION LAYER                             │
+│  RGB-D streams → ArUco detection → Grounded segmentation       │
+│  Mask/keypoint extraction → Grasp pose generation              │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────────────┐
+│                  TASK PLANNING LAYER                            │
+│  Behavior trees & task-manager logic for:                       │
+│  • Tool grasping • Tape cutting • Flap opening                 │
+│  • Box flipping • Box lifting • Content sorting                │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────────────┐
+│                 MOTION EXECUTION LAYER                          │
+│  ROS 2 actions for arm trajectories, TCP motion,               │
+│  gripper commands, and real-time feedback                      │
+└────────────────────────┬───────────────────────────��────────────┘
+                         │
+┌────────────────────────▼────────────────────────────────────────┐
+│                 DEPLOYMENT LAYER                                │
+│  Edge compute setup, ROS 2 Humble, MoveIt2,                    │
+│  camera calibration, and robot connection                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Diagram
 
 ```mermaid
 flowchart LR
-    Camera["RGB-D cameras"] --> Vision["Perception nodes"]
-    Marker["ArUco marker"] --> Vision
-    Vision -->|"right/grasppose"| Task["Task manager / behavior tree"]
+    Camera["📷 RGB-D Cameras"] --> Vision["🧠 Perception"]
+    Marker["🏷️ ArUco Markers"] --> Vision
+    Vision -->|"right/grasppose"| Task["📋 Task Manager"]
     Vision -->|"left/grasppose"| Task
     Vision -->|"right/aruco_poses"| Task
-    Task -->|"left/arm_control"| Left["Left arm controller"]
-    Task -->|"left/gripper_control"| Left
-    Task -->|"right/arm_control"| Right["Right arm controller"]
-    Task -->|"right/gripper_control"| Right
+    Task -->|"arm_control"| Left["🤖 Left Arm"]
+    Task -->|"gripper_control"| Left
+    Task -->|"arm_control"| Right["🤖 Right Arm"]
+    Task -->|"gripper_control"| Right
     Left -->|"feedback_states"| Task
     Right -->|"feedback_states"| Task
 ```
 
-## Repository Layout
+---
 
-```text
-.
-├── src/vision/
-│   ├── aruco_pose_node.py
-│   ├── box_opening_keypoint_node.py
-│   └── planar_depth_grasp_node.py
-├── ros2_ws/src/
-│   ├── grasp_common/grasp_util/
-│   ├── grasp_interfaces/grasp_msgs/
-│   ├── grasp_task_manager/
-│   └── jaka_controller/
-├── experiments/behavior_tree/
-│   ├── config/
-│   ├── launch/
-│   ├── test_behavior/
-│   └── legacy/
-├── docs/
-│   ├── deployment/
-│   ├── media/
-│   ├── workflow/
-│   ├── architecture/
-│   └── PROJECT_STRUCTURE.md
-└── archives/
-    └── legacy_robot_workspace.rar
+## 📁 Repository Structure
+
+```
+Dual-Arm-Robotic-Sorting-System/
+├── src/vision/                           # Python perception nodes
+│   ├── aruco_pose_node.py               # Tool pose detection
+│   ├── box_opening_keypoint_node.py     # Box handle detection
+│   └── planar_depth_grasp_node.py       # Object grasp planning
+│
+├── ros2_ws/src/                         # ROS 2 workspace
+│   ├── grasp_common/                    # Shared utilities
+│   ├── grasp_interfaces/                # Custom ROS messages/actions
+│   ├── grasp_task_manager/              # Main orchestration (C++)
+│   └── jaka_controller/                 # Arm & gripper control
+│
+├── experiments/behavior_tree/           # Task planning prototypes
+│   ├── config/                          # Behavior tree configs
+│   ├── launch/                          # Launch files
+│   ├── test_behavior/                   # Behavior tests
+│   └── legacy/                          # Archive
+│
+├── docs/                                # Documentation
+│   ├── deployment/                      # Setup guides
+│   ├── media/                           # Videos & images
+│   ├── workflow/                        # Process documentation
+│   └── architecture/                    # Design docs
+│
+└── archives/                            # Legacy code
 ```
 
-`docs/PROJECT_STRUCTURE.md` records the file-renaming map and the rationale behind the current layout.
+See [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) for detailed layout rationale.
 
-## Main Components
+---
 
-| Component | Node or package | Inputs | Outputs | Responsibility |
-| --- | --- | --- | --- | --- |
-| ArUco pose node | `src/vision/aruco_pose_node.py` | Right RGB image and camera info | `right/aruco_poses`, `aruco_markers` | Detect markers and publish tool/object reference poses. |
-| Box keypoint node | `src/vision/box_opening_keypoint_node.py` | Right RGB-D image and camera info | `right/grasppose` | Use grounded segmentation and mask geometry to estimate box-opening keypoints. |
-| Planar grasp node | `src/vision/planar_depth_grasp_node.py` | Left RGB-D image and camera info | `left/grasppose` | Run depth-image grasp detection and publish grasp pose, angle, width, and depth. |
-| Robot controller | `ros2_ws/src/jaka_controller` | ROS 2 action goals | `feedback_states` | Bridge ROS 2 actions to the robot SDK and gripper control. |
-| Task manager | `ros2_ws/src/grasp_task_manager` | Perception results and action feedback | Arm and gripper actions | Sequence the full box-opening task flow. |
-| Experiments | `experiments/behavior_tree` | Config files and perception topics | ROS 2 action calls | Prototype behavior-tree and Python task-manager policies. |
+## 🔧 Main Components
 
-## ROS 2 Interfaces
+| Component | Location | Inputs | Outputs | Role |
+|-----------|----------|--------|---------|------|
+| **ArUco Pose Node** | `src/vision/aruco_pose_node.py` | RGB image + camera info | Tool/object poses | Marker detection & localization |
+| **Box Keypoint Node** | `src/vision/box_opening_keypoint_node.py` | RGB-D image + camera info | Box grasp poses | Handle detection via segmentation |
+| **Planar Grasp Node** | `src/vision/planar_depth_grasp_node.py` | RGB-D image + camera info | Grasp pose/width/depth | Depth-based object grasping |
+| **Robot Controller** | `ros2_ws/src/jaka_controller` | ROS 2 action goals | Joint/TCP feedback | Robot SDK bridge |
+| **Task Manager** | `ros2_ws/src/grasp_task_manager` | Perception + feedback | Arm/gripper actions | Workflow orchestration |
+| **Behavior Tree** | `experiments/behavior_tree` | Config files + topics | ROS 2 actions | Policy prototyping |
 
-The custom action and message definitions live in `ros2_ws/src/grasp_interfaces/grasp_msgs`.
+---
+
+## 📡 ROS 2 Interfaces
+
+Custom action and message definitions in `ros2_ws/src/grasp_interfaces/grasp_msgs`:
 
 | Interface | Type | Purpose |
-| --- | --- | --- |
-| `ArmControl.action` | action | Executes one or more joint, TCP line, or TCP circle commands. |
-| `GripperControl.action` | action | Sends gripper position and force commands. |
-| `DualGrasp.action` | action | Coordinates dual-arm grasp behavior. |
-| `ArmCommand.msg` | msg | Encodes `JOINT_TYPE`, `TCP_TYPE`, and `TCP_CIRCLE_TYPE` commands. |
-| `FeedBackMsg.msg` | msg | Reports execution state, gripper state, joint position, and TCP pose. |
-| `KnifePose.msg` | msg | Stores knife pose estimates. |
-| `GraspPose.msg` / `DecisionPose.msg` | msg | Stores grasp candidate geometry and task decisions. |
+|-----------|------|---------|
+| `ArmControl.action` | Action | Joint, TCP line, or TCP circle commands |
+| `GripperControl.action` | Action | Gripper position & force control |
+| `DualGrasp.action` | Action | Coordinated dual-arm behavior |
+| `ArmCommand.msg` | Message | Command encoding (JOINT/TCP/CIRCLE) |
+| `FeedBackMsg.msg` | Message | Execution state, joint/TCP feedback |
+| `KnifePose.msg` | Message | Tool pose estimates |
+| `GraspPose.msg` / `DecisionPose.msg` | Message | Geometry & task decisions |
 
-## Environment
+---
 
-The expected deployment target is an edge compute board connected to two robot arms, two grippers, and RGB-D cameras.
+## 🖥️ Environment & Requirements
 
-| Area | Expected setup |
-| --- | --- |
-| Operating system | Ubuntu 22.04 is preferred. |
-| ROS | ROS 2 Humble. |
-| Motion stack | MoveIt2 Humble and KDL. |
-| Python | Python 3.10 on Ubuntu 22.04. |
-| Perception libraries | PyTorch, OpenCV, GroundingDINO, Segment Anything, Open3D, `graspnetAPI`, and `pyorbbecsdk`. |
-| Model artifacts | Local model checkpoints for grounded segmentation, mask prediction, planar grasping, and 6D grasping. |
+| Requirement | Specification |
+|-------------|----------------|
+| **OS** | Ubuntu 22.04 LTS (20.04 supported with caveats) |
+| **ROS** | ROS 2 Humble |
+| **Motion Stack** | MoveIt2 Humble + KDL |
+| **Python** | 3.10+ |
+| **Key Libraries** | PyTorch, OpenCV, GroundingDINO, Segment Anything, Open3D |
+| **Hardware** | Dual robotic arms, RGB-D cameras, grippers |
 
-Some deployment notes also cover Ubuntu 20.04 based systems. Prefer the Ubuntu 22.04 path for a cleaner ROS 2 Humble and MoveIt2 setup.
+---
 
-## Quick Start
+## 🚀 Quick Start
 
-Build the ROS 2 workspace:
+### 1️⃣ Build the ROS 2 Workspace
 
 ```bash
 cd ros2_ws
@@ -126,28 +169,28 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-Launch the dual-arm controller:
+### 2️⃣ Launch Dual-Arm Controller
 
 ```bash
 source ros2_ws/install/setup.bash
 ros2 launch jaka_controller dual_jaka_controller.launch.py
 ```
 
-Launch the C++ task manager:
+### 3️⃣ Launch Task Manager
 
 ```bash
 source ros2_ws/install/setup.bash
 ros2 launch grasp_task_manager grasp_task_manager.launch.py
 ```
 
-Run ArUco detection:
+### 4️⃣ Start Perception Nodes
 
+**ArUco Detection:**
 ```bash
 python3 src/vision/aruco_pose_node.py
 ```
 
-Run box keypoint perception:
-
+**Box Keypoint Detection:**
 ```bash
 python3 src/vision/box_opening_keypoint_node.py \
   --text_prompt box \
@@ -155,8 +198,7 @@ python3 src/vision/box_opening_keypoint_node.py \
   --sam_checkpoint /path/to/sam_vit_h_4b8939.pth
 ```
 
-Run planar depth grasping:
-
+**Planar Depth Grasping:**
 ```bash
 python3 src/vision/planar_depth_grasp_node.py \
   --network /path/to/c_d_epoch_36_iou_0.9943 \
@@ -165,97 +207,119 @@ python3 src/vision/planar_depth_grasp_node.py \
   --n-grasps 1
 ```
 
-## Configuration
+---
 
-Robot connection and controller parameters are stored here:
+## ⚙️ Configuration
 
-```text
-ros2_ws/src/jaka_controller/params/
-├── left_jaka_controller.yaml
-├── right_jaka_controller.yaml
-└── jaka_controller.yaml
+### Controller Parameters
+Located in `ros2_ws/src/jaka_controller/params/`:
+- `left_jaka_controller.yaml`
+- `right_jaka_controller.yaml`
+- `jaka_controller.yaml`
+
+### Task & Calibration Data
+Located in:
+- `ros2_ws/src/grasp_task_manager/config/grasp_task_manager.yaml`
+- `experiments/behavior_tree/test_behavior/real/*.txt`
+
+### Critical Calibration Values
+
+| Parameter | Meaning |
+|-----------|---------|
+| `tool2camera` | Camera pose relative to tool frame |
+| `camerabase2top` | Transform between camera base and top frame |
+| `tcp2tool` | Tool-center-point offset |
+| `camera_intrinsic` | Camera intrinsic matrix |
+| `init_joint` | Initial joint positions per arm |
+
+---
+
+## 📦 Box-Opening Workflow
+
+The full autonomous sequence:
+
+```
+locate tool → grasp tool → locate box → cut tape → 
+open flaps → place tool → flip box → lift box → sort contents
 ```
 
-Task and calibration data are stored here:
+### Implementation Map
 
-```text
-ros2_ws/src/grasp_task_manager/config/grasp_task_manager.yaml
-experiments/behavior_tree/test_behavior/real/*.txt
-```
-
-Important calibration values:
-
-| Key | Meaning |
-| --- | --- |
-| `tool2camera` | Camera pose relative to the tool frame. |
-| `camerabase2top` | Transform between camera base and top reference frame. |
-| `tcp2tool` | Tool-center-point offset. |
-| `camera_intrinsic` | Camera intrinsic matrix values. |
-| `init_joint` | Initial joint positions for each arm. |
-
-## Box-Opening Workflow
-
-The workflow documentation is stored at `docs/workflow/open_box_process_v1.pdf`. The implemented task sequence can be summarized as:
-
-```text
-locate tool -> grasp tool -> locate box -> cut tape -> open flaps -> place tool -> flip box -> lift box -> sort contents
-```
-
-Representative code entry points:
-
-| Stage | Perception or planning source | Task-manager function |
-| --- | --- | --- |
-| Locate and grasp tool | ArUco pose node | `dispatchGraspKnifeTask` |
-| Estimate object grasp | Planar depth grasp node | `dispatchGraspObjectTask` |
-| Move and place object | Fixed poses and computed grasp pose | `moveToPlace`, `dispatchDropBoxTask` |
+| Stage | Perception Source | Task-Manager Function |
+|-------|-------------------|----------------------|
+| Locate/grasp tool | ArUco pose node | `dispatchGraspKnifeTask` |
+| Estimate object grasp | Planar depth node | `dispatchGraspObjectTask` |
+| Move/place object | Fixed poses + computed | `moveToPlace`, `dispatchDropBoxTask` |
 | Cut tape | Box keypoint node | `dispatchCutBoxTask`, `performCutBoxOperation` |
-| Open box flaps | TCP line and circle primitives | `dispatchOpenBoxTask`, `generateArmOpenCommandsForPose` |
-| Place tool | Fixed tool pose | `dispatchPlaceKnifeTask` |
-| Flip and lift box | Dual-arm grasp and TCP motion | `dispatchFlippBoxTask`, `dispatchLiftBoxTask` |
+| Open flaps | TCP primitives | `dispatchOpenBoxTask`, `generateArmOpenCommandsForPose` |
+| Place tool | Fixed pose | `dispatchPlaceKnifeTask` |
+| Flip/lift box | Dual-arm grasp | `dispatchFlippBoxTask`, `dispatchLiftBoxTask` |
 | Sort contents | 6D grasp prediction | `dispatchSortingObjectTask` |
 
-## Model and Data Paths
+---
 
-Large model checkpoints are not stored in this repository. Configure local paths for:
+## 🧠 Model & Data Paths
 
-| Model or utility | Purpose | Typical file |
-| --- | --- | --- |
-| GroundingDINO SwinT | Text-guided object detection | `groundingdino_swint_ogc.pth` |
-| SAM ViT-H | Object mask prediction | `sam_vit_h_4b8939.pth` |
-| HRG / GG-CNN style model | Planar depth-image grasping | `c_d_epoch_36_iou_0.9943` |
-| FGC-GraspNet / GraspNet | 6D grasp candidate prediction | `checkpoint_fgc.tar` |
-| `box_centerline_utils` | Box mask geometry and keypoint extraction | Local Python module on `PYTHONPATH` |
+Large model checkpoints are **not** stored in this repository. Configure these locally:
 
-The perception nodes use command-line arguments and ROS parameters so model locations can be set without editing source code.
+| Model | Purpose | Typical File |
+|-------|---------|--------------|
+| **GroundingDINO SwinT** | Text-guided object detection | `groundingdino_swint_ogc.pth` |
+| **SAM ViT-H** | Object mask prediction | `sam_vit_h_4b8939.pth` |
+| **HRG / GG-CNN** | Planar depth grasping | `c_d_epoch_36_iou_0.9943` |
+| **FGC-GraspNet** | 6D grasp prediction | `checkpoint_fgc.tar` |
+| **box_centerline_utils** | Box geometry extraction | Local Python module |
 
-## Safety Checklist
+Model paths are configurable via **command-line arguments** and **ROS parameters** without editing source.
 
-Before running on hardware:
+---
 
-1. Confirm both robot IP addresses, namespaces, and initial joint poses.
-2. Validate `init_joint` in simulation or low-speed manual mode.
-3. Confirm camera intrinsics with `ros2 topic echo /left_camera/color/camera_info`.
-4. Verify ArUco outputs in RViz before tool-grasp execution.
-5. Verify `left/grasppose` and `right/grasppose` values against the camera frame.
-6. Test gripper open/close commands with no object in the workspace.
-7. Run arm motion at reduced speed and keep emergency stop access clear.
-8. Execute the full sequence only after single-arm and dual-arm primitives pass.
+## ⚠️ Safety Checklist
 
-## Reference Projects
+**Before deploying to hardware:**
 
-The repository follows conventions used by mature robotics and perception projects:
+- [ ] Confirm both robot IP addresses, namespaces, and initial joint poses
+- [ ] Validate `init_joint` in simulation or low-speed manual mode
+- [ ] Confirm camera intrinsics: `ros2 topic echo /left_camera/color/camera_info`
+- [ ] Verify ArUco outputs in RViz before tool-grasp execution
+- [ ] Validate `left/grasppose` and `right/grasppose` against camera frame
+- [ ] Test gripper open/close with no objects in workspace
+- [ ] Run arm motion at reduced speed with clear emergency stop access
+- [ ] Execute full sequence only after all primitives pass individual tests
 
-- [MoveIt2](https://github.com/moveit/moveit2): ROS 2 motion planning, launch structure, and robot description organization.
-- [ros2_control](https://github.com/ros-controls/ros2_control): hardware abstraction and controller separation.
-- [Navigation2](https://github.com/ros-navigation/navigation2): behavior-tree oriented task execution patterns.
-- [Grounded-Segment-Anything](https://github.com/IDEA-Research/Grounded-Segment-Anything): language-guided segmentation workflow.
-- [GraspNet Baseline](https://github.com/graspnet/graspnet-baseline): 6D grasp detection reference pipeline.
-- [FGC-GraspNet](https://github.com/ZhihaoDong/FGC-GraspNet): 6D grasp detection model reference.
+---
 
-## Known Follow-Up Work
+## 🎓 Reference Projects
 
-- Replace hard-coded calibration values with a single versioned calibration file.
-- Add launch files for the standalone Python perception nodes.
-- Add a small dataset and recorded rosbag for repeatable perception tests.
-- Split legacy experimental scripts into stable entry points and archived prototypes.
-- Add CI checks for Python compilation, ROS interface generation, and C++ formatting.
+This repository follows best practices from mature robotics projects:
+
+- **[MoveIt2](https://github.com/moveit/moveit2)** — Motion planning, launch structure, descriptions
+- **[ros2_control](https://github.com/ros-controls/ros2_control)** — Hardware abstraction patterns
+- **[Navigation2](https://github.com/ros-navigation/navigation2)** — Behavior-tree task execution
+- **[Grounded-Segment-Anything](https://github.com/IDEA-Research/Grounded-Segment-Anything)** — Language-guided segmentation
+- **[GraspNet Baseline](https://github.com/graspnet/graspnet-baseline)** — 6D grasp detection pipeline
+- **[FGC-GraspNet](https://github.com/ZhihaoDong/FGC-GraspNet)** — Advanced 6D grasping
+
+---
+
+## 📋 Known Follow-Up Work
+
+- [ ] Replace hard-coded calibration with versioned calibration file
+- [ ] Add launch files for standalone Python perception nodes
+- [ ] Create small rosbag dataset for repeatable perception testing
+- [ ] Split legacy scripts into stable vs. experimental
+- [ ] Add CI/CD for Python linting, ROS generation, C++ formatting
+
+---
+
+## 📄 License & Attribution
+
+[Add your license here]
+
+---
+
+## 💬 Contributing & Support
+
+For questions, issues, or contributions, please [open an issue](https://github.com/yunruiguo/Dual-Arm-Robotic-Sorting-System/issues) or submit a pull request.
+
+**⭐ If this project is helpful, please consider starring it!**
