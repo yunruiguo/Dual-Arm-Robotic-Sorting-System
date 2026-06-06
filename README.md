@@ -38,27 +38,27 @@ The system is organized into **four integrated layers**:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    PERCEPTION LAYER                             │
-│  RGB-D streams → ArUco detection → Grounded segmentation       │
-│  Mask/keypoint extraction → Grasp pose generation              │
+│  RGB-D streams → ArUco detection → Grounded segmentation        │
+│  Mask/keypoint extraction → Grasp pose generation               │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │                  TASK PLANNING LAYER                            │
 │  Behavior trees & task-manager logic for:                       │
-│  • Tool grasping • Tape cutting • Flap opening                 │
-│  • Box flipping • Box lifting • Content sorting                │
+│  • Tool grasping • Tape cutting • Flap opening                  │
+│  • Box flipping • Box lifting • Content sorting                 │
 └────────────────────────┬────────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │                 MOTION EXECUTION LAYER                          │
-│  ROS 2 actions for arm trajectories, TCP motion,               │
-│  gripper commands, and real-time feedback                      │
-└────────────────────────┬───────────────────────────��────────────┘
+│  ROS 2 actions for arm trajectories, TCP motion,                │
+│  gripper commands, and real-time feedback                       │
+└────────────────────────┬───────────────────────────��───────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────────┐
 │                 DEPLOYMENT LAYER                                │
-│  Edge compute setup, ROS 2 Humble, MoveIt2,                    │
-│  camera calibration, and robot connection                      │
+│  Edge compute setup, ROS 2 Humble, MoveIt2,                     │
+│  camera calibration, and robot connection                       │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
